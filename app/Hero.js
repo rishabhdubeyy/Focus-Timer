@@ -2,21 +2,31 @@
 
 import {useEffect, useRef, useState} from 'react';
 import {Button} from "@/components/ui/button";
+import Image from "next/image";
+import {Snowfall} from "react-snowfall";
+import Social from "@/app/social";
 
 export default function Hero() {
 
     const [start, setStart] = useState(false);
-    const [time, setTime] = useState(0);
-    const initialTime = useRef(0);
+    const [work, setWork ] = useState(false);
+    const [sbreak, setSbreak ] = useState(false);
+    const [lbreak, setLbreak ] = useState(false);
+    const [time, setTime] = useState(1500);
+    const [initialTime, setInitialTime] = useState(1500);
     const intervalId = useRef(null);
 
-    useEffect(Timer, [start]);
+    useEffect(Timer, [start, time]);
 
     function Timer () {
         if (start) {
-            intervalId.current = setInterval(() => {
-                setTime(Date.now() - initialTime.current);
-            }, 1000);
+            if (time>0){
+                intervalId.current = setInterval(() => {
+                    setTime(time - 1);
+                }, 1000);
+            } else {
+                setStart(false);
+            }
         }
         return () => {
             clearInterval(intervalId.current);
@@ -24,16 +34,14 @@ export default function Hero() {
     }
 
     function watch () {
-        const seconds = String(Math.floor(time / (1000) % 60)).padStart(2, '0');
-        const minutes = String(Math.floor(time / (1000 * 60) % 60)).padStart(2, '0');
-        const hours = String(Math.floor(time / (1000 * 60 * 60))).padStart(2, '0');
+        const seconds = String(Math.floor(time % 60)).padStart(2, '0');
+        const minutes = String(Math.floor(time / 60)).padStart(2, '0');
 
-        return `${hours}:${minutes}:${seconds}`;
+        return `${minutes}:${seconds}`;
     }
 
     function begin () {
         setStart(true);
-        initialTime.current = Date.now() - time;
     }
 
     function pause () {
@@ -41,27 +49,53 @@ export default function Hero() {
     }
 
     function restart () {
-        setTime(0)
+        setTime(initialTime);
         setStart(false);
+    }
+
+    function setWorkState() {
+        setWork(true);
+        setSbreak(false);
+        setLbreak(false);
+        setTime(1500);
+        setInitialTime(1500)
+    }
+
+    function setShortBreakState() {
+        setWork(false);
+        setSbreak(true);
+        setLbreak(false);
+        setTime(300);
+        setInitialTime(300)
+    }
+
+    function setLongBreakState() {
+        setWork(false);
+        setSbreak(false);
+        setLbreak(true);
+        setTime(900);
+        setInitialTime(900)
     }
 
 
     return (
         <div>
-            <div className="flex-col justify-center items-center shadow-lg rounded-3xl w-[500px] h-[300px]">
-                <div className="flex items-center justify-center pt-7">
-                    <h1 className="font-semibold text-xl">Focus Timer</h1>
-                </div>
-                <div className="flex items-center justify-center">
-                    <p className="text-neutral-400">It will help you track your focus time</p>
-                </div>
-                <div className="flex justify-center items-center pt-10">
-                    <h1 className="text-5xl font-semibold">{watch()}</h1>
-                </div>
-                <div className="flex items-center justify-center pt-10 gap-2">
-                    <Button onClick={begin}>Start</Button>
-                    <Button variant="secondary" onClick={pause}>Pause</Button>
-                    <Button variant="destructive" onClick={restart}>Reset</Button>
+            {/*<Social/>*/}
+            <div className="bg-black flex justify-center items-center h-screen">
+                <div className="flex-col items-center justify-center">
+                    <div className="flex items-center justify-center gap-2">
+                        <Button onClick={setWorkState}>Focus</Button>
+                        <Button onClick={setShortBreakState}>Short break</Button>
+                        <Button onClick={setLongBreakState}>Long break</Button>
+                    </div>
+                    <div className="flex justify-center items-center">
+                        <h1 className="text-[200px] font-semibold tabular-nums text-white">{watch()}</h1>
+                    </div>
+                    <div className="flex items-center justify-center gap-2">
+                        <Button onClick={begin}>Start</Button>
+                        <Button variant="secondary" onClick={pause}>Pause</Button>
+                        <Button variant="destructive" onClick={restart}>Reset</Button>
+                    </div>
                 </div>
             </div>
         </div>
