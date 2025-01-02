@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Hero from "@/app/Hero";
-import SocialBar from "@/app/Social-bar";
-import Footer from "@/app/Footer";
+import Snowflake from "@/app/test";
+import Social from "@/app/social";
 
 export default function Home() {
   return (
       <div>
-          <div className="flex items-center justify-center h-screen">
+          <Snowflake />
+
+          <div className="bg-black flex items-center justify-center">
               <Hero/>
           </div>
-          <Footer/>
       </div>
   );
 }
